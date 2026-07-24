@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Pulse</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial,sans-serif;
+        }
+
+        body{
+    background:linear-gradient(135deg,#f8fafc,#eef2ff);
+    min-height:100vh;
+    padding:20px;
+}
+
+        .container{
+    width:100%;
+    max-width:900px;
+    background:white;
+    border-radius:20px;
+    padding:35px;
+    box-shadow:0 15px 35px rgba(0,0,0,.08);
+
+    margin:40px auto;
+}
+footer{
+    text-align:center;
+    margin-top:30px;
+    padding-top:20px;
+    border-top:1px solid #e5e7eb;
+    color:#6b7280;
+    font-size:14px;
+}
+
+
+        h1{
+            text-align:center;
+            color:#1f2937;
+            margin-bottom:8px;
+            font-size:40px;
+        }
+
+        .subtitle{
+            text-align:center;
+            color:#6b7280;
+            margin-bottom:30px;
+        }
+
+        input{
+            width:100%;
+            padding:16px;
+            border:1px solid #d1d5db;
+            border-radius:12px;
+            font-size:16px;
+            margin-bottom:15px;
+        }
+
+        input:focus{
+            outline:none;
+            border-color:#4f46e5;
+        }
+
+        button{
+            width:100%;
+            padding:16px;
+            border:none;
+            border-radius:12px;
+            background:#4f46e5;
+            color:white;
+            font-size:17px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:.3s;
+        }
+
+        button:hover{
+            background:#4338ca;
+        }
+
+        #loading{
+            display:none;
+            text-align:center;
+            margin-top:20px;
+            color:#4f46e5;
+            font-weight:bold;
+        }
+
+        #error{
+            color:red;
+            text-align:center;
+            margin-top:15px;
+        }
+
+        .card{
+            display:none;
+            margin-top:30px;
+        }
+
+        .metrics{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:18px;
+        }
+
+        .metric-card{
+            background:white;
+            border-radius:15px;
+            padding:20px;
+            text-align:center;
+            box-shadow:0 5px 15px rgba(0,0,0,.08);
+        }
+
+        .metric-card h3{
+            color:#6b7280;
+            margin-bottom:12px;
+            font-size:15px;
+        }
+
+        .metric-card p{
+            font-size:30px;
+            color:#4f46e5;
+            font-weight:bold;
+        }
+
+        .info-card{
+            margin-top:18px;
+            background:white;
+            border-radius:15px;
+            padding:20px;
+            box-shadow:0 5px 15px rgba(0,0,0,.08);
+        }
+
+        .info-card h3{
+            color:#374151;
+            margin-bottom:10px;
+        }
+
+        .info-card p{
+            color:#555;
+            line-height:1.7;
+        }
+
+
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1> Page Pulse</h1>
+
+    <p class="subtitle">
+        Analyze any website's SEO and page metrics instantly
+    </p>
+
+    <input
+            id="url"
+            type="text"
+            placeholder="https://example.com">
+
+    <button onclick="analyze()">
+        Analyze Website
+    </button>
+
+    <div id="loading">
+        Analyzing...
+    </div>
+
+    <div id="error"></div>
+
+    <div class="card" id="result">
+
+        <div class="metrics">
+
+            <div class="metric-card">
+                <h3>🌐 HTTP Status</h3>
+                <p id="status"></p>
+            </div>
+
+            <div class="metric-card">
+                <h3>⚡ Response Time</h3>
+                <p id="time"></p>
+            </div>
+
+            <div class="metric-card">
+                <h3>📝 H1 Count</h3>
+                <p id="h1"></p>
+            </div>
+
+            <div class="metric-card">
+                <h3>🖼️ Images</h3>
+                <p id="images"></p>
+            </div>
+
+            <div class="metric-card">
+                <h3>🔗 Internal Links</h3>
+                <p id="links"></p>
+            </div>
+
+            <div class="metric-card">
+                <h3>📖 Word Count</h3>
+                <p id="words"></p>
+            </div>
+
+        </div>
+
+        <div class="info-card">
+            <h3>📄 Page Title</h3>
+            <p id="title"></p>
+        </div>
+
+        <div class="info-card">
+            <h3>📋 Meta Description</h3>
+            <p id="description"></p>
+        </div>
+
+        <div class="info-card">
+            <h3>🖼️ Missing ALT Images</h3>
+            <p id="alt"></p>
+        </div>
+    </div>
+    <footer>
+        Built for Digital Heroes Training Task |
+        <a href="https://digitalheroesco.com"
+           target="_blank"
+           style="color:#4f46e5;text-decoration:none;font-weight:bold;">
+            Digital Heroes
+        </a>
+    </footer>
+</div>
+
+
+
+    <script>
+
+        async function analyze(){
+
+            document.getElementById("error").innerHTML="";
+            document.getElementById("result").style.display="none";
+            document.getElementById("loading").style.display="block";
+
+            const url=document.getElementById("url").value;
+
+            try{
+
+                const response=await fetch("http://localhost:8081/api/analyze",{
+
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+
+                    body:JSON.stringify({
+                        url:url
+                    })
+
+                });
+
+                const data=await response.json();
+
+               const status=document.getElementById("status");
+
+status.innerHTML=data.httpStatus;
+
+if(data.httpStatus==200){
+    status.style.color="#16a34a";
+}else{
+    status.style.color="#dc2626";
+}
+                document.getElementById("time").innerHTML=data.responseTime+" ms";
+                document.getElementById("h1").innerHTML=data.h1Count;
+                document.getElementById("images").innerHTML=data.imageCount;
+                document.getElementById("links").innerHTML=data.internalLinks;
+                document.getElementById("words").innerHTML=data.wordCount;
+                document.getElementById("title").innerHTML=data.title;
+                document.getElementById("description").innerHTML=data.description;
+                document.getElementById("alt").innerHTML=data.missingAltCount;
+
+                document.getElementById("result").style.display="block";
+
+            }
+            catch(e){
+
+                document.getElementById("error").innerHTML="Unable to analyze website.";
+
+            }
+
+            document.getElementById("loading").style.display="none";
+        }
+
+    </script>
+
+</body>
+</html>
