@@ -8,7 +8,7 @@ https://page-pulse-production.up.railway.app
 
 ##  GitHub Repository
 
-https://github.com/<YOUR_USERNAME>/page-pulse
+https://github.com/<Nitishajain1130>/page-pulse
 
 ---
 
@@ -52,7 +52,7 @@ https://github.com/<YOUR_USERNAME>/page-pulse
 ### Clone the repository
 
 ```bash
-git clone https://github.com/<YOUR_USERNAME>/page-pulse.git
+git clone https://github.com/<Nitishajain1130>/page-pulse.git
 ```
 
 ### Navigate to project
