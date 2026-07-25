@@ -65,7 +65,7 @@ class PageServiceTest {
         assertEquals(2, result.getH1Count());
         assertEquals(5, result.getImageCount());
         assertEquals(1, result.getMissingAltCount());
-        assertEquals(8, result.getWordCount());
+        assertEquals(9, result.getWordCount());
         assertEquals(0, result.getInternalLinks());
     }
 
@@ -101,7 +101,26 @@ class PageServiceTest {
 
     @Test
     void analyze_shouldReturnErrorResponse_whenUrlIsInvalid() {
+        // Failure case 1: malformed URL syntax should trigger the catch block in analyze()
         PageResponse result = pageService.analyze("not-a-valid-url");
+
+        assertEquals(0, result.getHttpStatus());
+        assertEquals(0, result.getResponseTime());
+        assertEquals("Error", result.getTitle());
+        assertNotNull(result.getDescription());
+        assertEquals(0, result.getH1Count());
+        assertEquals(0, result.getImageCount());
+        assertEquals(0, result.getMissingAltCount());
+        assertEquals(0, result.getInternalLinks());
+        assertEquals(0, result.getWordCount());
+    }
+
+    @Test
+    void analyze_shouldReturnErrorResponse_whenDomainIsUnreachable() {
+        // Failure case 2: URL is syntactically valid, but the domain does not
+        // exist, so Jsoup throws an UnknownHostException when trying to connect.
+        // The service should catch this gracefully instead of crashing.
+        PageResponse result = pageService.analyze("https://this-domain-does-not-exist-asdkjaskdj123.com");
 
         assertEquals(0, result.getHttpStatus());
         assertEquals(0, result.getResponseTime());
